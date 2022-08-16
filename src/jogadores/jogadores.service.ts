@@ -11,16 +11,10 @@ export class JogadoresService {
     @InjectModel('Jogador') private readonly jogadorModel: Model<Jogador>,
   ) {}
 
-  private readonly logger = new Logger(JogadoresService.name);
-
   async criarAtualizarJogador(
     criarJogadorDto: CriarJogadorDto,
   ): Promise<Jogador> {
     const { email } = criarJogadorDto;
-
-    // const jogadorEncontrado = this.jogadores.find(
-    //   (jogador) => jogador.email === email,
-    // );
 
     const jogadorEncontrado = await this.jogadorModel.findOne({ email }).exec();
 
@@ -33,7 +27,6 @@ export class JogadoresService {
 
   async consultarTodosJogadores(): Promise<Jogador[]> {
     return await this.jogadorModel.find().exec();
-    // return this.jogadores;
   }
 
   async consultarJogadoresPeloEmail(email: string): Promise<Jogador> {
@@ -47,39 +40,12 @@ export class JogadoresService {
   }
 
   async deletarJogador(email: string): Promise<any> {
-    return await this.jogadorModel.remove({ email }).exec();
-    /*
-    const jogadorEncontrado = this.jogadores.find(
-      (jogador) => jogador.email === email,
-    );
-
-    this.jogadores = this.jogadores.filter(
-      (jogador) => jogador.email !== jogadorEncontrado.email,
-    );
-    */
+    return await this.jogadorModel.deleteOne({ email }).exec();
   }
 
   private async criar(criarJogadorDto: CriarJogadorDto): Promise<Jogador> {
     const jogadorCriado = new this.jogadorModel(criarJogadorDto);
     return await jogadorCriado.save();
-
-    /*
-    const { nome, telefoneCelular, email } = criarJogadorDto;
-
-    const jogador: Jogador = {
-      _id: uuidv4(),
-      nome,
-      telefoneCelular,
-      email,
-      ranking: 'A',
-      posicaoRanking: 1,
-      urlFotoJogador: 'http://www.google.com.br/foto123.jpg',
-    };
-
-    this.logger.log(`criarJogadorDto: ${JSON.stringify(jogador)}`);
-
-    this.jogadores.push(jogador);
-    */
   }
 
   private async atualizar(criarJogadorDto: CriarJogadorDto): Promise<Jogador> {
@@ -89,11 +55,5 @@ export class JogadoresService {
         { $set: criarJogadorDto },
       )
       .exec();
-
-    /*
-    const { nome } = criarJogadorDto;
-
-    jogadorEncontrado.nome = nome;
-    */
   }
 }
