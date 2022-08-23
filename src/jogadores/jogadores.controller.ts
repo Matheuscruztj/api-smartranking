@@ -3,11 +3,14 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Post,
+  Put,
   Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { AtualizarJogadorDto } from './dtos/atualizar-jogador.dto';
 import { CriarJogadorDto } from './dtos/criar-jogador.dto';
 import { Jogador } from './interfaces/jogador.interface';
 import { JogadoresService } from './jogadores.service';
@@ -19,25 +22,35 @@ export class JogadoresController {
 
   @Post()
   @UsePipes(ValidationPipe)
-  async criarAtualizarJogador(@Body() criarJogadorDto: CriarJogadorDto) {
-    await this.jogadoresService.criarAtualizarJogador(criarJogadorDto);
+  async criarJogador(@Body() criarJogadorDto: CriarJogadorDto) {
+    return await this.jogadoresService.criarJogador(criarJogadorDto);
+  }
+
+  @Put('/:_id')
+  @UsePipes(ValidationPipe)
+  async atualizarJogador(
+    @Body() atualizarJogadorDto: AtualizarJogadorDto,
+    @Param('_id', JogaadoresValidacaoParametrosPipe) _id: string
+  ): Promise<void> {
+    await this.jogadoresService.atualizarJogador(_id, atualizarJogadorDto);
   }
 
   @Get()
-  async consultarJogadores(
-    @Query('email', JogaadoresValidacaoParametrosPipe) email: string,
-  ): Promise<Jogador | Jogador[]> {
-    if (email) {
-      return this.jogadoresService.consultarJogadoresPeloEmail(email);
-    } else {
-      return this.jogadoresService.consultarTodosJogadores();
-    }
+  async consultarJogadores(): Promise<Jogador[]> {
+    return await this.jogadoresService.consultarTodosJogadores();
   }
 
-  @Delete()
+  @Get('/:_id')
+  async consultarJogadoresPeloId(
+    @Param('_id', JogaadoresValidacaoParametrosPipe) _id: string,
+  ): Promise<Jogador> {
+    return await this.jogadoresService.consultarJogadoresPeloId(_id);
+  }
+
+  @Delete('/:_id')
   async deletarJogador(
-    @Query('email', JogaadoresValidacaoParametrosPipe) email: string,
+    @Param('_id', JogaadoresValidacaoParametrosPipe) _id: string,
   ): Promise<void> {
-    this.jogadoresService.deletarJogador(email);
+    this.jogadoresService.deletarJogador(_id);
   }
 }
